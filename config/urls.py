@@ -47,4 +47,5 @@ urlpatterns = [
     path("groups/", include("groups.urls", namespace="groups")),
     path("events/", include("events.urls", namespace="events")),
     path("sermons/", include("sermons.urls", namespace="sermon")),
+    path("attendance/", include("attendance.urls", namespace="attendance")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
