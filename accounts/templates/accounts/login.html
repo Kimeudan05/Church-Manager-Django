@@ -3,10 +3,13 @@
   <div class="card w-96 bg-base-100 shadow-xl p-6">
     <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
 
-    {% if messages %} {% for message in messages %}
+    {% if messages %}
+    <!---->
+    {% if not request.path == '/accounts/login/' %}
+    <!-- Only show messages on pages other than login -->
+    {% for message in messages %}
     <p class="text-error">{{ message }}</p>
-    {% endfor %} {% endif %}
-
+    {% endfor %} {% endif %} {% endif %}
     <form method="POST">
       {% csrf_token %}
 

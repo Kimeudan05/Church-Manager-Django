@@ -36,6 +36,8 @@ from django.contrib.auth.decorators import login_required
 
 #     return render(request, "dashboard.html", {"role": role})
 
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -44,4 +46,5 @@ urlpatterns = [
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("groups/", include("groups.urls", namespace="groups")),
     path("events/", include("events.urls", namespace="events")),
-]
+    path("sermons/", include("sermons.urls", namespace="sermon")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

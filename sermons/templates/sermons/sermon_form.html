@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+<!--seperator-->
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-6">{{ title }}</h1>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="space-y-4">
+    {% for field in form %}
+    <label class="form-control w-full">
+      <span class="label-text">{{ field.label }}</span>
+      {{ field }} {% if field.help_text %}
+      <p class="text-xs text-gray-400">{{ field.help_text }}</p>
+      {% endif %} {% if field.errors %}
+      <p class="text-error">{{ field.errors.0 }}</p>
+      {% endif %}
+    </label>
+    {% empty %}
+    <label for="">Nothing here</label>
+    {% endfor %}
+  </div>
+
+  <!-- Show current PDF file if available -->
+  {% if form.instance.pdf %}
+  <p>
+    Current PDF:
+    <a href="{{ form.instance.pdf.url }}" target="_blank"
+      >{{ form.instance.pdf.name }}</a
+    >
+  </p>
+  {% endif %}
+
+  <!-- Show current thumbnail image if available -->
+  {% if form.instance.thumbnail %}
+  <p>
+    Current Thumbnail:
+    <img
+      src="{{ form.instance.thumbnail.url }}"
+      alt="Thumbnail"
+      class="w-32 h-32"
+    />
+  </p>
+  {% endif %}
+
+  <button class="btn btn-primary mt-4">Save</button>
+  <a href="{% url 'sermons:list' %}" class="btn btn-ghost mt-4 ml-2">Cancel</a>
+</form>
+
+{% endblock %}

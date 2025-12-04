@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+<!--seperator-->
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Delete Sermon</h1>
+
+<p>Are you sure you want to delete <strong>{{ sermon.title }}</strong>?</p>
+
+<form method="post">
+  {% csrf_token %}
+
+  <button type="submit" class="btn btn-error">Yes, delete</button>
+  <a href="{% url 'sermon:list' %}" class="btn btn-ghost ml-2">Cancel</a>
+</form>
+
+{% endblock content %}

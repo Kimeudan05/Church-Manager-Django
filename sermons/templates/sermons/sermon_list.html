@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+<!--seperator-->
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Sermons</h1>
+
+<a href="{% url 'sermons:create' %}" class="btn btn-primary mb-4">Add sermon</a>
+
+<table class="table table-zebra w-full">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Preacher</th>
+      <th>Date</th>
+      <th>Group</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for sermon in sermons%}
+    <tr>
+      <td>
+        <a href="{% url 'sermon:detail' sermon.pk %}">{{sermon.title}}</a>
+      </td>
+      <td>{{sermon.preacher}}</td>
+      <td>{{sermon.date}}</td>
+      <td>
+        {% if sermon.group %} {{sermon.group.name}} {% else %} - {% endif %}
+      </td>
+
+      <td>
+        <a
+          href="{% url 'sermons:update' sermon.pk %}"
+          class="btn btn-sm btn-info"
+          >Edit</a
+        >
+        <a
+          href="{% url 'sermons:delete' sermon.pk %}"
+          class="btn btn-sm btn-error"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center">No sermons added yet</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

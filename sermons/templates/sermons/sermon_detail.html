@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% block content %}
+<div class="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
+  <h1 class="text-4xl font-bold text-center text-blue-700 mb-6">
+    Sermon Details
+  </h1>
+  <br />
+
+  <!-- Sermon Information -->
+  <div class="space-y-2">
+    <div class="flex justify-between items-center">
+      <p class="text-xl font-semibold">Title:</p>
+      <p class="text-lg">{{ sermon.title }}</p>
+    </div>
+    <div class="flex justify-between items-center">
+      <p class="text-xl font-semibold">Scriptures:</p>
+      <p class="text-lg">{{ sermon.scripture }}</p>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <p class="text-xl font-semibold">Preacher:</p>
+      <p class="text-lg">{{ sermon.preacher }}</p>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <p class="text-xl font-semibold">Group:</p>
+      <p class="text-lg">{{ sermon.group }}</p>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <p class="text-xl font-semibold">Date:</p>
+      <p class="text-lg">{{ sermon.date }}</p>
+    </div>
+  </div>
+
+  <!-- Attachment (PDF) -->
+  <div class="mt-4">
+    <p class="text-xl font-semibold">Attachment:</p>
+    {% if sermon.pdf %}
+    <a href="{{ sermon.pdf.url }}" target="_blank" class="btn btn-primary mt-2"
+      >Download Sermon PDF</a
+    >
+    {% else %}
+    <p class="text-sm text-gray-600 mt-2">Not Available</p>
+    {% endif %}
+  </div>
+
+  <!-- Video URL -->
+  <div class="mt-4">
+    <p class="text-xl font-semibold">Video URL:</p>
+    {% if sermon.video_url %}
+    <a
+      href="{{ sermon.video_url }}"
+      target="_blank"
+      class="btn btn-secondary mt-2"
+      >Watch Sermon</a
+    >
+    {% else %}
+    <p class="text-sm text-gray-600 mt-2">No URL for this sermon</p>
+    {% endif %}
+  </div>
+
+  <!-- Thumbnail -->
+  {% if sermon.thumbnail %}
+  <div class="mt-6">
+    <p class="text-xl font-semibold">Thumbnail:</p>
+    <img
+      src="{{ sermon.thumbnail.url }}"
+      alt="Sermon Thumbnail"
+      class="mt-2 rounded-lg w-full max-w-xs mx-auto shadow-md"
+    />
+  </div>
+  {% endif %}
+
+  <!-- Back Button -->
+  <div class="mt-6 text-center">
+    <a
+      href="{% url 'sermon:list' %}"
+      class="btn btn-primary text-blue-600 hover:bg-blue-100"
+      >Back to Sermons</a
+    >
+  </div>
+</div>
+{% endblock %}
