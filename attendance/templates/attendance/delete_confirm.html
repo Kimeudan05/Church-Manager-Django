@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+<!--seperator-->
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">Delete Attendance Sheet</h1>
+
+<p>
+  Are you sure you want to delete this <strong>{{ sheet.type }}</strong> record
+  ?
+</p>
+
+<form method="post">
+  {% csrf_token %}
+
+  <button type="submit" class="btn btn-error">Yes, delete</button>
+  <a href="{% url 'attendance:attendance_list' %}" class="btn btn-ghost ml-2"
+    >Cancel</a
+  >
+</form>
+
+{% endblock content %}

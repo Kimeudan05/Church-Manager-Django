@@ -55,3 +55,38 @@ def group_delete(request, pk):
         "groups/group_confirm_delete.html",
         {"group": group, "title": "Delete Group"},
     )
+
+
+# group dashboard
+
+from events.models import Event
+from sermons.models import Sermon
+
+from attendance.models import AttendanceSheet
+from accounts.models import Profile
+
+
+@login_required
+def my_group_dashboard(request):
+    user = request.user
+
+    # ensure user is a leader
+    if user.profile.role != "leader":
+        return redirect("dashboard:index")
+
+    group = user.profile.group  # assigned during profile setup
+
+    if not group:
+        return render(request, "groups/my_group.html", {"group": None})
+
+    context = {
+        "group": group,
+        "members": Profile.objects.filter(group=group),
+        "events": Event.objects.filter(group=group).order_by("date")[:10],
+        "sermons": Sermon.objects.filter(group=group).order_by("-date")[:10],
+        # "attendance_records": Attendance.objects.filter(group=group).order_by("-date")[
+        #     :10
+        # ],
+    }
+
+    return render(request, "groups/my_group.html", context)

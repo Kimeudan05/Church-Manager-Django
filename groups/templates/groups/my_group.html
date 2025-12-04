@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+<!---->
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-6">My group</h1>
+
+{% if not group %}
+
+<p class="alert alert-warning">You are not assigned to any group</p>
+{% else %}
+
+<div class="mb-6 p-4 bg-base-100 shadow rounded">
+  <h2 class="text-2xl font-bold">{{ group.name }}</h2>
+  <p class="text-gray-500">Leader: {{ request.user.username }}</p>
+</div>
+
+<!--Members-->
+<h2 class="text-xl font-semibold mb-3">Members</h2>
+<div class="p-4 bg-base-100 shadow rounded mb-6">
+  <ul class="list-disc ml-6">
+    {% for member in members %}
+    <li>{{forloop.counter}}. {{member.user.username}} {{member.user.email}}</li>
+    {% empty %}
+    <li>No mebers assigned</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!--Events-->
+<h2 class="text-xl font-semibold mb-3">Group Events</h2>
+<div class="space-y-2 mb-6">
+  {% for event in events %}
+  <div class="p-4 border rounded bg-base-100 shadow">
+    <h3 class="font-bold">{{ event.title }}</h3>
+    <p>{{ event.date }}</p>
+  </div>
+  {% empty %}
+  <p>No events found.</p>
+  {% endfor %}
+</div>
+
+<!-- Sermons -->
+<h2 class="text-xl font-semibold mb-3">Group Sermons</h2>
+<div class="space-y-2 mb-6">
+  {% for sermon in sermons %}
+  <div class="p-4 border rounded bg-base-100 shadow">
+    <h3 class="font-bold">
+      <a href="{% url 'sermons:detail' sermon.pk %}">{{ sermon.title }} </a>
+    </h3>
+    <p>{{ sermon.date }}</p>
+  </div>
+  {% empty %}
+  <p>No sermons found.</p>
+  {% endfor %}
+</div>
+
+{% endif %} {% endblock content %}

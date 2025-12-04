@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block content %}
+
+<h2 class="text-xl font-bold mb-4">
+  Mark Attendance - {{ sheet.get_type_display }} ({{ sheet.date }})
+</h2>
+
+<form method="POST" class="space-y-2">
+  {% csrf_token %} {% for field in form %}
+  <div class="flex items-center gap-2">
+    {{ field }}
+    <label>{{ field.label }}</label>
+  </div>
+  {% endfor %}
+
+  <button class="btn btn-primary mt-4 w-full">Save Attendance</button>
+  <a
+    href="{% url 'attendance:attendance_list' %}"
+    class="btn btn-error mt-4 ml-2"
+    >Cancel</a
+  >
+</form>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="space-y-4">
+  <!-- Top action bar -->
+  <div
+    class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+  >
+    <!-- Filters Toggle -->
+    <div x-data="{ open: false }" class="w-full md:w-auto">
+      <button @click="open = !open" class="btn btn-primary w-full md:w-auto">
+        <span x-show="!open">Show Filters</span>
+        <span x-show="open">Hide Filters</span>
+      </button>
+
+      <!-- Filter Form -->
+      <form
+        x-show="open"
+        x-transition
+        method="get"
+        class="mt-4 space-y-6 bg-base-200 p-4 rounded-lg shadow"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>{{ form.date_from.label_tag }} {{ form.date_from }}</div>
+          <div>{{ form.date_to.label_tag }} {{ form.date_to }}</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>{{ form.type.label_tag }} {{ form.type }}</div>
+          <div>{{ form.group.label_tag }} {{ form.group }}</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>{{ form.sermon.label_tag }} {{ form.sermon }}</div>
+          <div>{{ form.event.label_tag }} {{ form.event }}</div>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-2">
+          <button class="btn btn-primary flex-1">Filter</button>
+          <a
+            href="{% url 'attendance:attendance_list' %}"
+            class="btn btn-secondary flex-1"
+          >
+            Clear Filters
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- New Sheet Button -->
+    <a
+      href="{% url 'attendance:attendance_create' %}"
+      class="btn btn-primary w-full md:w-auto"
+    >
+      New Sheet
+    </a>
+  </div>
+
+  <!-- Title -->
+  <h2 class="text-2xl font-bold">Attendance Records</h2>
+
+  <!-- Table Wrapper -->
+  <div class="overflow-x-auto rounded-lg border border-base-300">
+    <table class="table w-full">
+      <thead class="bg-base-200">
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Group/Sermon/Event</th>
+          <th>Total Present</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for s in sheets %}
+        <tr>
+          <td>{{ s.date }}</td>
+          <td>{{ s.get_type_display }}</td>
+          <td>
+            {% if s.group %}Group: {{s.group.name}} {% endif %}
+            <!---->
+            {% if s.sermon %} Sermon: {{s.sermon.name}} {% endif %}
+            <!---->
+            {% if s.event %} Event: {{s.event.name}} {% endif %}
+          </td>
+          <td>{{ s.total_present }}</td>
+          <td class="space-x-2">
+            <a
+              href="{% url 'attendance:attendance_mark' s.id %}"
+              class="btn btn-sm btn-outline"
+            >
+              Mark
+            </a>
+            <a
+              href="{% url 'attendance:attendance_edit' s.id %}"
+              class="btn btn-sm btn-warning"
+            >
+              Edit
+            </a>
+            <a
+              href="{% url 'attendance:attendance_delete' s.id %}"
+              class="btn btn-sm btn-error"
+            >
+              Delete
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center py-4">No Data recorded</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="flex flex-col md:flex-row gap-4">
+    <a
+      href="{% url 'attendance:attendance_export_excel' %}"
+      class="btn btn-success"
+    >
+      Export Excel
+    </a>
+    <a
+      href="{% url 'attendance:attendance_export_pdf' %}"
+      class="btn btn-error"
+    >
+      Export PDF
+    </a>
+  </div>
+</div>
+
+{% endblock %}
