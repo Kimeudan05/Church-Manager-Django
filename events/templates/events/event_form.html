@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% block content %}
+
+<h1 class="text-3xl font-bold mb-6">{{ title }}</h1>
+
+<form method="POST">
+  {% csrf_token %}
+
+  <div class="space-y-4">
+    {% for field in form %}
+    <label class="form-control w-full">
+      <span class="label-text">{{ field.label }}</span>
+      {{ field }} {% if field.help_text %}
+      <p class="text-xs text-gray-400">{{ field.help_text }}</p>
+      {% endif %} {% if field.errors %}
+      <p class="text-error">{{ field.errors.0 }}</p>
+      {% endif %}
+    </label>
+    {% endfor %}
+  </div>
+
+  <button class="btn btn-primary mt-4">Save</button>
+  <a href="{% url 'events:list' %}" class="btn btn-ghost mt-4 ml-2">Cancel</a>
+</form>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %}
+<div class="flex justify-center items-center min-h-screen bg-base-200">
+  <div class="card w-96 bg-base-100 shadow-xl p-6">
+    <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+
+    {% if messages %} {% for message in messages %}
+    <p class="text-error">{{ message }}</p>
+    {% endfor %} {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <label class="form-control w-full mb-3">
+        <span class="label-text mb-2">Username</span>
+        <input
+          name="username"
+          class="input input-bordered w-full"
+          required
+          placeholder="username"
+        />
+      </label>
+
+      <label class="form-control w-full mb-3">
+        <span class="label-text mb-2">Password</span>
+        <input
+          type="password"
+          name="password"
+          class="input input-bordered w-full"
+          placeholder="Enter password"
+          required
+        />
+      </label>
+
+      <button class="btn btn-primary w-full">Login</button>
+
+      <p class="mt-4 text-center">
+        No account?
+        <a class="text-primary" href="{% url 'accounts:register' %}"
+          >Register</a
+        >
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock %}

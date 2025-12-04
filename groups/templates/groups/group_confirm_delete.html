@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+<!--hi-->
+{% block content %}
+
+<h1 class="text-3xl font-bold mb-6">Delete Group</h1>
+<p>Are you sure you want to delete "{{ group.name }}"?</p>
+
+<form method="POST" class="mt-4">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-error">Yes, Delete</button>
+  <a href="{% url 'groups:list' %}" class="btn btn-ghost ml-2">Cancel</a>
+</form>
+
+{% endblock %}

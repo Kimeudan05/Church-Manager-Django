@@ -1,0 +1,169 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" x-data="{ sidebarOpen: false }">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Church Manager{% endblock %}</title>
+
+    <!-- Tailwind + DaisyUI (compiled version from Tailwind CLI/Tailwind app) -->
+    {% comment %}
+    <link rel="stylesheet" href="{% static 'theme/css/dist/styles.css' %}" />
+    {% endcomment %}
+
+    <!-- AlpineJS -->
+    <script
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+
+    <!-- Tailwind from your theme -->
+    {% comment %}
+    <link rel="stylesheet" href="{% static 'theme/css/dist/styles.css' %}" />
+    {% endcomment %}
+
+    <!-- DaisyUI -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css"
+      rel="stylesheet"
+    />
+    <!--Tailwind css-->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!--Icons-->
+    <script
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+  </head>
+
+  <body class="bg-base-200">
+    <!-- Navbar -->
+    <header>
+      <div class="navbar bg-blue-700 text-white shadow-md">
+        <div class="flex-1 px-4">
+          <a class="text-xl font-bold" href="#">Church Manager</a>
+        </div>
+
+        <div class="hidden md:flex space-x-2 px-4">
+          <a
+            href="{% url 'dashboard:index' %}"
+            class="btn btn-ghost btn-sm text-white"
+            >Dashboard</a
+          >
+          <a
+            href="{% url 'accounts:logout' %}"
+            class="btn btn-ghost btn-sm text-white"
+            >Logout</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- Body Wrapper -->
+    <div class="flex min-h-screen">
+      <!-- Mobile Sidebar Button -->
+      <div class="md:hidden px-4">
+        <button
+          @click="sidebarOpen = !sidebarOpen"
+          class="btn btn-ghost btn-square"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+      </div>
+      <!-- Sidebar -->
+      <aside
+        class="fixed md:relative z-40 w-64 bg-base-100 p-4 shadow-lg transition-transform duration-300 ease-in-out min-h-screen -translate-x-full md:translate-x-0"
+        :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }"
+      >
+        <!-- Sidebar Header -->
+        <div class="flex justify-between items-center mb-6">
+          <div class="text-2xl font-bold">Church Manager</div>
+          <button
+            class="md:hidden lg:hidden btn btn-ghost btn-square"
+            @click="sidebarOpen = false"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Sidebar Links -->
+        <nav class="flex flex-col space-y-2">
+          <!-- Dashboard -->
+          <a
+            href="{% url 'dashboard:index' %}"
+            class="btn btn-ghost w-full justify-start {% if request.resolver_match.url_name == 'index' %}btn-active{% endif %}"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7m-9 0v8m-4-4h8"
+              />
+            </svg>
+            Dashboard
+          </a>
+
+          {% if role == "admin" %}
+          <a href="#" class="btn btn-ghost w-full justify-start">Users</a>
+          <a
+            href="{% url 'groups:list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Groups</a
+          >
+          <a
+            href="{% url 'events:list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Events</a
+          >
+          <a href="#" class="btn btn-ghost w-full justify-start">Sermons</a>
+
+          {% elif role == "pastor" %}
+          <a href="#" class="btn btn-ghost w-full justify-start">Sermons</a>
+          <a href="#" class="btn btn-ghost w-full justify-start">Events</a>
+
+          {% elif role == "leader" %}
+          <a href="#" class="btn btn-ghost w-full justify-start">My Group</a>
+          <a href="#" class="btn btn-ghost w-full justify-start">Attendance</a>
+
+          {% else %}
+          <a href="#" class="btn btn-ghost w-full justify-start">Sermons</a>
+          <a href="#" class="btn btn-ghost w-full justify-start">Events</a>
+          {% endif %}
+
+          <a
+            href="{% url 'accounts:logout' %}"
+            class="btn btn-ghost w-full justify-start mt-6"
+          >
+            Logout
+          </a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-6 overflow-auto">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>

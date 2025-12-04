@@ -1,0 +1,53 @@
+{% extends "base.html" %} {% block content %}
+<h1 class="text-3xl font-bold mb-6">Events</h1>
+
+<a href="{% url 'events:create' %}" class="btn btn-primary mb-4"
+  >Create Event</a
+>
+
+<table class="table table-zebra w-full">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Date</th>
+      <th>Group</th>
+      <th>Type</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for event in events %}
+    <tr>
+      <td>{{ event.title }}</td>
+      <td>{{ event.date }}</td>
+      <td>
+        {% if event.group %} {{ event.group.name }} {% else %} — {% endif %}
+      </td>
+      <td>
+        {% if event.event_type == "global" %}
+        <span class="badge badge-primary p-2">Global</span>
+        {% else %}
+
+        <span class="badge badge-accent">Group</span>
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url 'events:update' event.pk %}" class="btn btn-sm btn-info"
+          >Edit</a
+        >
+        <a
+          href="{% url 'events:delete' event.pk %}"
+          class="btn btn-sm btn-error"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5" class="text-center">No events yet.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
