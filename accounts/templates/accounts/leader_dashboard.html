@@ -1,0 +1,115 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="p-5">
+  <!-- Header -->
+  <h1 class="text-3xl font-bold mb-4">Group Leader Dashboard</h1>
+  <p class="mb-6 text-lg">
+    Welcome, <b>{{ request.user.username }}</b> — Leader of:
+    <span class="badge badge-primary">{{ group.name }}</span>
+  </p>
+
+  <!-- Quick Actions -->
+  <div class="grid md:grid-cols-3 gap-4 mb-8">
+    <a href="#" class="btn btn-primary w-full"> 📋 Create Attendance Sheet </a>
+
+    <a
+      href="{% url 'attendance:attendance_list' %}"
+      class="btn btn-secondary w-full"
+    >
+      📊 View Attendance Records
+    </a>
+
+    <a
+      href="{% url 'events:create' %}?group={{ group.id }}"
+      class="btn btn-accent w-full"
+    >
+      📅 Add Group Event
+    </a>
+  </div>
+
+  <!-- Group Details -->
+  <div class="card bg-base-100 shadow mb-8 p-5">
+    <h2 class="text-2xl font-bold mb-4">Group Overview</h2>
+
+    <p class="mb-2"><b>Name:</b> {{ group.name }}</p>
+    <p class="mb-2"><b>Description:</b> {{ group.description }}</p>
+    <p class="mb-2"><b>Total Members:</b> {{ members|length }}</p>
+  </div>
+
+  <!-- Member List -->
+  <div class="card bg-base-200 shadow mb-8 p-5">
+    <h2 class="text-2xl font-bold mb-4">Group Members</h2>
+
+    <ul class="space-y-2">
+      {% for m in members %}
+      <li class="p-2 border rounded bg-ghost shadow-sm">
+        {{forloop.counter}}. {{ m.user.username }} — {{ m.user.email }}
+      </li>
+      {% empty %}
+      <p>No members assigned.</p>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Recent Attendance -->
+  <div class="card bg-base-200 shadow mb-8 p-5">
+    <h2 class="text-2xl font-bold mb-3">Recent Attendance Sheets</h2>
+    <table class="table w-full">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Total Present</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sheet in sheets %}
+        <tr>
+          <td>{{ sheet.date }}</td>
+          <td>{{ sheet.get_type_display }}</td>
+          <td>{{ sheet.total_present }}</td>
+          <td>
+            <a
+              href="{% url 'attendance_mark' sheet.id %}"
+              class="btn btn-sm btn-outline"
+            >
+              View
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4">No attendance recorded yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Group Sermons -->
+  <div class="card bg-base-200 shadow mb-8 p-5">
+    <h2 class="text-2xl font-bold mb-4">Latest Group Sermons</h2>
+    {% for sermon in group_sermons %}
+    <div class="p-3 bg-white shadow mb-2 rounded">
+      <b>{{ sermon.title }}</b> — {{ sermon.date }}
+    </div>
+    {% empty %}
+    <p>No sermons yet.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Group Events -->
+  <div class="card bg-base-200 shadow p-5">
+    <h2 class="text-2xl font-bold mb-4">Upcoming Group Events</h2>
+    {% for event in group_events %}
+    <div class="p-3 bg-white shadow mb-2 rounded">
+      <b>{{ event.title }}</b> — {{ event.date }}
+    </div>
+    {% empty %}
+    <p>No upcoming events.</p>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

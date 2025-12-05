@@ -124,35 +124,90 @@
             Dashboard
           </a>
 
+          <!--Admin-->
           {% if role == "admin" %}
-          <a href="#" class="btn btn-ghost w-full justify-start">Users</a>
+          <a
+            href="{% url 'accounts:user_list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Users</a
+          >
           <a
             href="{% url 'groups:list' %}"
             class="btn btn-ghost w-full justify-start"
-            >Groups</a
+            >Manage Groups</a
           >
           <a
             href="{% url 'events:list' %}"
             class="btn btn-ghost w-full justify-start"
-            >Events</a
+            >manage Events</a
           >
-          <a href="#" class="btn btn-ghost w-full justify-start">Sermons</a>
+          <a
+            href="{% url 'sermons:list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Manage Sermons</a
+          >
 
-          {% elif role == "pastor" %}
-          <a href="#" class="btn btn-ghost w-full justify-start">Sermons</a>
-          <a href="#" class="btn btn-ghost w-full justify-start">Events</a>
+          <a
+            href="{% url 'attendance:attendance_list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Attendance</a
+          >
 
-          {% elif role == "leader" %}
+          {% endif %}
+
+          <!--Pastor-->
+          {% if role == "pastor" %}
+          <a
+            href="{% url 'sermons:create' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Add Sermon</a
+          >
+          <a
+            href="{% url 'sermons:list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >My Sermons</a
+          >
+
+          {% endif %}
+
+          <!--Leader-->
+
+          {% if role == "leader" %}
           <a
             href="{% url 'groups:my_group' %}"
             class="btn btn-ghost w-full justify-start"
             >My Group</a
           >
-          <a href="#" class="btn btn-ghost w-full justify-start">Attendance</a>
 
-          {% else %}
-          <a href="#" class="btn btn-ghost w-full justify-start">Sermons</a>
-          <a href="#" class="btn btn-ghost w-full justify-start">Events</a>
+          <a
+            href="{% url 'accounts:leader_dashboard' %}"
+            class="{% if request.resolver_match.url_name == 'leader_dashboard' %}active{% endif %} btn btn-ghost w-full justify-start"
+            >Leader Dashboard</a
+          >
+
+          <a href="#" class="btn btn-ghost w-full justify-start"
+            >Mark Attendance</a
+          >
+          <a href="#" class="btn btn-ghost w-full justify-start"
+            >Group Events</a
+          >
+          <a href="#" class="btn btn-ghost w-full justify-start"
+            >Group Sermons</a
+          >
+
+          {% endif %}
+          <!---->
+          {% if role == "member" %}
+          <a
+            href="{% url 'sermons:list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Sermons</a
+          >
+          <a
+            href="{% url 'events:events_list' %}"
+            class="btn btn-ghost w-full justify-start"
+            >Events</a
+          >
           {% endif %}
 
           <a

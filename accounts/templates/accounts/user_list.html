@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block content %}
+
+<h1 class="text-center">Registered Members</h1>
+<div class="p-4">
+  <ul class="space-y-2">
+    {% for profile in users %}
+    <li>{{ profile.user.username }} — {{ profile.get_role_display }}</li>
+    {% empty %}
+    <li>No records</li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

@@ -7,6 +7,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 
 from accounts.forms import RegisterForm
+from accounts.models import Profile
+
+from accounts.decorators import role_required
+from events.models import Event
+from groups.models import MinistryGroup
+from attendance.models import AttendanceSheet, AttendanceRecord
+from sermons.models import Sermon
+from accounts.models import Profile
 
 
 # views / routes
@@ -32,36 +40,6 @@ def logout_view(request):
     return redirect("accounts:login")
 
 
-# def register_view(request):
-#     if request.method == "POST":
-#         form = RegisterForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, "Account created successfully.")
-#             return redirect("accounts:login")
-
-#         username = request.POST.get("username")
-#         email = request.POST.get("email")
-#         password = request.POST.get("password")
-
-#         if User.objects.filter(username=username).exists():
-#             messages.error(request, "Username already exists")
-#             return redirect("accounts:register")
-
-#         user = User.objects.create_user(
-#             username=username, email=email, password=password
-#         )
-
-#         # Assign default role
-#         member_group = Group.objects.get(name="Member")
-#         user.groups.add(member_group)
-
-#         messages.success(request, "Account created! Please log in.")
-#         return redirect("accounts:login")
-
-#     return render(request, "accounts/register.html")
-
-
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -77,3 +55,46 @@ def register_view(request):
         form = RegisterForm()
 
     return render(request, "accounts/register.html", {"form": form})
+
+
+# list all users
+
+
+def user_list(request):
+    users = Profile.objects.all()
+    return render(request, "accounts/user_list.html", {"users": users})
+
+
+# Leader Dashbord
+
+
+@role_required("leader")
+def leader_dashboard(request):
+    profile = request.user.profile
+    group = profile.group  # leader's assigned group
+
+    # safety :Leader must belong to a group
+    if not group:
+        return render(request, "accounts/no_group.html")
+
+    # group members
+    members = Profile.objects.filter(group=group)
+
+    # group events
+    group_events = Event.objects.filter(group=group).order_by("-date")[:5]
+
+    # group sermons
+    group_sermons = Sermon.objects.filter(group=group).order_by("-date")[:5]
+
+    # group attendance Sheets
+    sheets = AttendanceSheet.objects.filter(group=group).order_by("-date")[:10]
+
+    context = {
+        "group": group,
+        "members": members,
+        "group_events": group_events,
+        "group_sermons": group_sermons,
+        "sheets": sheets,
+        "profile": profile,
+    }
+    return render(request, "accounts/leader_dashboard.html", context)
