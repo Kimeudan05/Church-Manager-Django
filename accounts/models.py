@@ -29,6 +29,10 @@ class Profile(models.Model):
         help_text="Only used for Group leaders & members",
     )
 
+    # helper for role
+    def is_admin_or_pastor(self):
+        return self.role in ["admin", "pastor"]
+
     def __str__(self):
         return f"{self.user.username} - {self.role}"
 

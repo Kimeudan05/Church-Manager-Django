@@ -10,7 +10,12 @@
 
   <!-- Quick Actions -->
   <div class="grid md:grid-cols-3 gap-4 mb-8">
-    <a href="#" class="btn btn-primary w-full"> 📋 Create Attendance Sheet </a>
+    <a
+      href="{% url 'attendance:attendance_create' %}"
+      class="btn btn-primary w-full"
+    >
+      📋 Create Attendance Sheet
+    </a>
 
     <a
       href="{% url 'attendance:attendance_list' %}"
@@ -71,7 +76,7 @@
           <td>{{ sheet.total_present }}</td>
           <td>
             <a
-              href="{% url 'attendance_mark' sheet.id %}"
+              href="{% url 'attendance:attendance_mark' sheet.id %}"
               class="btn btn-sm btn-outline"
             >
               View

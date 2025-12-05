@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Church Manager{% endblock %}</title>
 
-    <!-- Tailwind + DaisyUI (compiled version from Tailwind CLI/Tailwind app) -->
+    <!-- Tailwind + DaisyUI (compiled version from Tailwind CLI/Tailwind app) WIRE THIS LATER -->
     {% comment %}
     <link rel="stylesheet" href="{% static 'theme/css/dist/styles.css' %}" />
     {% endcomment %}
@@ -17,11 +17,6 @@
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
       defer
     ></script>
-
-    <!-- Tailwind from your theme -->
-    {% comment %}
-    <link rel="stylesheet" href="{% static 'theme/css/dist/styles.css' %}" />
-    {% endcomment %}
 
     <!-- DaisyUI -->
     <link
@@ -35,96 +30,76 @@
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
       defer
     ></script>
+
+    <style>
+      /* Reserve space for fixed navbar */
+      body {
+        padding-top: 64px; /* height of navbar */
+      }
+    </style>
   </head>
 
   <body class="bg-base-200">
-    <!-- Navbar -->
-    <header>
+    <!-- ================= NAVBAR (FIXED) ================= -->
+    <header class="fixed top-0 left-0 right-0 z-50">
       <div class="navbar bg-blue-700 text-white shadow-md">
         <div class="flex-1 px-4">
-          <a class="text-xl font-bold" href="#">Church Manager</a>
+          <a class="text-xl font-bold">Church Manager</a>
         </div>
 
         <div class="hidden md:flex space-x-2 px-4">
-          <a
-            href="{% url 'dashboard:index' %}"
-            class="btn btn-ghost btn-sm text-white"
+          <a href="{{ dashboard_url }}" class="btn btn-ghost btn-sm text-white"
             >Dashboard</a
           >
+          {% if request.user.is_authenticated %}
           <a
             href="{% url 'accounts:logout' %}"
             class="btn btn-ghost btn-sm text-white"
             >Logout</a
           >
+          {% else %}
+          <a
+            href="{% url 'accounts:login' %}"
+            class="btn btn-ghost btn-sm text-white"
+            >Login</a
+          >
+          {% endif %}
+        </div>
+
+        <!-- Mobile toggle -->
+        <div class="md:hidden px-4">
+          <button
+            @click="sidebarOpen = !sidebarOpen"
+            class="btn btn-ghost btn-square text-white md:hidden"
+          >
+            ☰
+          </button>
         </div>
       </div>
     </header>
 
-    <!-- Body Wrapper -->
-    <div class="flex min-h-screen">
-      <!-- Mobile Sidebar Button -->
-      <div class="md:hidden px-4">
-        <button
-          @click="sidebarOpen = !sidebarOpen"
-          class="btn btn-ghost btn-square"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
-      </div>
-      <!-- Sidebar -->
+    <!-- ================= PAGE WRAPPER ================= -->
+    <div class="flex">
+      <div
+        class="fixed inset-0 bg-opacity-40 z-30 md:hidden"
+        x-show="sidebarOpen"
+        @click="sidebarOpen = false"
+      ></div>
+      <!-- ================= SIDEBAR (FIXED ON LEFT) ================= -->
       <aside
-        class="fixed md:relative z-40 w-64 bg-base-100 p-4 shadow-lg transition-transform duration-300 ease-in-out min-h-screen -translate-x-full md:translate-x-0"
+        class="fixed top-16 bottom-0 left-0 w-64 bg-base-100 p-4 shadow-lg transform transition-transform duration-300 md:translate-x-0 z-40"
         :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }"
       >
-        <!-- Sidebar Header -->
-        <div class="flex justify-between items-center mb-6">
-          <div class="text-2xl font-bold">Church Manager</div>
-          <button
-            class="md:hidden lg:hidden btn btn-ghost btn-square"
-            @click="sidebarOpen = false"
-          >
-            ✕
-          </button>
-        </div>
-
-        <!-- Sidebar Links -->
         <nav class="flex flex-col space-y-2">
           <!-- Dashboard -->
           <a
-            href="{% url 'dashboard:index' %}"
-            class="btn btn-ghost w-full justify-start {% if request.resolver_match.url_name == 'index' %}btn-active{% endif %}"
+            href="{{ dashboard_url }}"
+            class="btn btn-ghost w-full justify-start"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 12l2-2m0 0l7-7 7 7m-9 0v8m-4-4h8"
-              />
-            </svg>
             Dashboard
           </a>
 
-          <!--Admin-->
+          <!-- ADMIN -->
           {% if role == "admin" %}
           <a
             href="{% url 'accounts:user_list' %}"
@@ -139,23 +114,21 @@
           <a
             href="{% url 'events:list' %}"
             class="btn btn-ghost w-full justify-start"
-            >manage Events</a
+            >Manage Events</a
           >
           <a
             href="{% url 'sermons:list' %}"
             class="btn btn-ghost w-full justify-start"
             >Manage Sermons</a
           >
-
           <a
             href="{% url 'attendance:attendance_list' %}"
             class="btn btn-ghost w-full justify-start"
             >Attendance</a
           >
-
           {% endif %}
 
-          <!--Pastor-->
+          <!-- PASTOR -->
           {% if role == "pastor" %}
           <a
             href="{% url 'sermons:create' %}"
@@ -167,36 +140,28 @@
             class="btn btn-ghost w-full justify-start"
             >My Sermons</a
           >
-
           {% endif %}
 
-          <!--Leader-->
-
+          <!-- LEADER -->
           {% if role == "leader" %}
           <a
             href="{% url 'groups:my_group' %}"
             class="btn btn-ghost w-full justify-start"
             >My Group</a
           >
-
           <a
             href="{% url 'accounts:leader_dashboard' %}"
-            class="{% if request.resolver_match.url_name == 'leader_dashboard' %}active{% endif %} btn btn-ghost w-full justify-start"
+            class="btn btn-ghost w-full justify-start"
             >Leader Dashboard</a
           >
-
-          <a href="#" class="btn btn-ghost w-full justify-start"
+          <a
+            href="{% url 'attendance:attendance_mark' %}"
+            class="btn btn-ghost w-full justify-start"
             >Mark Attendance</a
           >
-          <a href="#" class="btn btn-ghost w-full justify-start"
-            >Group Events</a
-          >
-          <a href="#" class="btn btn-ghost w-full justify-start"
-            >Group Sermons</a
-          >
-
           {% endif %}
-          <!---->
+
+          <!-- MEMBER -->
           {% if role == "member" %}
           <a
             href="{% url 'sermons:list' %}"
@@ -204,23 +169,31 @@
             >Sermons</a
           >
           <a
-            href="{% url 'events:events_list' %}"
+            href="{% url 'events:list' %}"
             class="btn btn-ghost w-full justify-start"
             >Events</a
           >
           {% endif %}
 
+          <!-- Logout -->
+          {% if request.user.is_authenticated %}
           <a
             href="{% url 'accounts:logout' %}"
-            class="btn btn-ghost w-full justify-start mt-6"
+            class="btn btn-ghost btn-sm text-white"
+            >Logout</a
           >
-            Logout
-          </a>
+          {% else %}
+          <a
+            href="{% url 'accounts:login' %}"
+            class="btn btn-ghost btn-sm text-white"
+            >Login</a
+          >
+          {% endif %}
         </nav>
       </aside>
 
-      <!-- Main Content -->
-      <main class="flex-1 p-6 overflow-auto">
+      <!-- ================= MAIN CONTENT ================= -->
+      <main class="flex-1 p-6 ml-0 md:ml-64 mt-4">
         {% block content %}{% endblock %}
       </main>
     </div>

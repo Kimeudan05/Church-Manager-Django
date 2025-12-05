@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block content %}
+<h1>Welcome, {{ request.user.username }} (Pastor)</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- My Sermons -->
+  <div class="card p-4 shadow">
+    <h2 class="text-xl font-bold mb-3">My Sermons</h2>
+    {% for sermon in sermons %}
+    <div class="border p-2 mb-2 rounded">
+      <h3>{{ sermon.title }}</h3>
+      <p>{{ sermon.date }} | {{ sermon.scripture }}</p>
+      <a
+        href="{% url 'sermons:update' sermon.id %}"
+        class="btn btn-sm btn-warning"
+        >Edit</a
+      >
+    </div>
+    {% empty %}
+    <p>No sermons yet.</p>
+    {% endfor %}
+    <a href="{% url 'sermons:create' %}" class="btn btn-primary mt-2"
+      >Add New Sermon</a
+    >
+  </div>
+
+  <!-- Events -->
+
+  <!--Global Events-->
+  <div class="card p-4 shadow">
+    <h2 class="text-xl font-bold mb-3">Global Events</h2>
+    {% for event in global_events %}
+    <div class="border p-2 mb-2 rounded">
+      <h3>{{ event.title }}</h3>
+      <p>{{ event.date }}</p>
+    </div>
+    {% empty %}
+    <p>No upcoming events.</p>
+    {% endfor %}
+  </div>
+
+  <!--Group Events-->
+
+  <div class="card p-4 shadow">
+    <h2 class="text-xl font-bold mb-3">{{my_group}} Events</h2>
+    {% for event in group_events %}
+    <div class="border p-2 mb-2 rounded">
+      <h3>{{ event.title }}</h3>
+      <p>{{ event.date }}</p>
+    </div>
+    {% empty %}
+    <p>No upcoming events.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

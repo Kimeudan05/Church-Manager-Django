@@ -1,20 +1,39 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db import models
+
 
 # Create your views here.
 
 from .models import Sermon
 from .forms import SermonForm
+from events.models import Event
+
+
+# Helper for pastor
+def pastor_required(function):
+    def wrapper(request, *args, **kwargs):
+        if (
+            request.user.profile.role != "pastor"
+            and request.user.profile.role != "admin"
+        ):
+            messages.error(request, "Access Denied")
+            return redirect("dashboard:index")
+        return function(request, *args, **kwargs)
+
+    return wrapper
 
 
 @login_required
+@pastor_required
 def sermons_list(request):
     sermons = Sermon.objects.all().order_by("-date")  # date desc
     return render(request, "sermons/sermon_list.html", {"sermons": sermons})
 
 
 @login_required
+@pastor_required
 def sermon_create(request):
     if request.method == "POST":
         form = SermonForm(request.POST, request.FILES)
@@ -33,6 +52,7 @@ def sermon_create(request):
 
 
 @login_required
+@pastor_required
 def sermon_update(request, pk):
     sermon = get_object_or_404(Sermon, pk=pk)
 
@@ -53,6 +73,7 @@ def sermon_update(request, pk):
 
 
 @login_required
+@pastor_required
 def sermon_delete(request, pk):
     sermon = get_object_or_404(Sermon, pk=pk)
     if request.method == "POST":

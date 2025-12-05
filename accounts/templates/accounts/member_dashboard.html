@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+<!---->
+{% block content %}
+<h1 class="text-2xl font-bold mb-4 text-center">
+  Welcome {{profile.user.username}}
+</h1>
+<br />
+
+<!--Top Profile Card-->
+
+<div class="card shadow mb-6">
+  <div class="flex items-center gap-4">
+    <img
+      src="{{profile.avatar.url}}"
+      alt="Profile Picture"
+      class="w-50 h-50 rounded"
+    />
+    <div>
+      <p class="font-semibold text-lg">{{ profile.user.get_full_name }}</p>
+      <p class="text-gray-600">{{ profile.role|title }}</p>
+      <p class="text-gray-500 text-sm">Group: {{ profile.group.name }}</p>
+      <p class="text-gray-500 text-sm">Email: {{ profile.user.email }}</p>
+    </div>
+  </div>
+</div>
+
+<!--Events-->
+<div class="card p-4 shadow mb-6">
+  <h2 class="text-xl font-semibold mb-3">Upcoming Events</h2>
+  {% for event in events %}
+  <div class="border p-3 mb-2 rounded">
+    <h3 class="font-bold">{{ event.title }}</h3>
+    <p>{{ event.date }}</p>
+    <p class="text-gray-600">{{ event.description|truncatechars:80 }}</p>
+  </div>
+  {% empty %}
+  <p>No events found.</p>
+  {% endfor %}
+</div>
+
+<!-- Sermons -->
+<div class="card p-4 shadow mb-6">
+  <h2 class="text-xl font-semibold mb-3">Sermons</h2>
+  {% for sermon in sermons %}
+  <div class="border p-3 mb-2 rounded">
+    <h3 class="font-bold">{{ sermon.title }}</h3>
+    <p>{{ sermon.date }}</p>
+    <a class="link" href="{% url 'sermons:detail' sermon.id %}">View Details</a>
+  </div>
+  {% empty %}
+  <p>No sermons available.</p>
+  {% endfor %}
+</div>
+
+<!-- Attendance -->
+<div class="card p-4 shadow mb-10">
+  <h2 class="text-xl font-semibold mb-3">My Recent Attendance</h2>
+  {% for rec in attendance_records %}
+  <p>
+    {{forloop.counter}}. {% if rec.attendance.event %} {{rec.attendance.event}}
+    - {% else %}
+    <span>Not specified - </span>
+    {% endif %}
+    <!---->
+    {{ rec.attendance.date }} — {% if rec.present %}
+    <span class="text-green-600">Present</span>
+    {% else %}
+    <span class="text-red-600">Absent</span>
+    {% endif %}
+  </p>
+  {% empty %}
+  <p>No attendance data yet.</p>
+  {% endfor %}
+</div>
+
+{% endblock content %}

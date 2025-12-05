@@ -6,7 +6,10 @@ from groups.models import MinistryGroup
 # Create your models here.
 class Sermon(models.Model):
     title = models.CharField(max_length=100)
-    preacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    preacher = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True
+    )  # If you want a registered user
+    # preacher = models.CharField(max_length=100, blank=True, null=True)
     date = models.DateField()
 
     scripture = models.CharField(max_length=100, blank=True, null=True)

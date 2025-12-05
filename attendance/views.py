@@ -7,23 +7,41 @@ from django.contrib.auth.models import User
 from .models import AttendanceSheet, AttendanceRecord
 from groups.models import MinistryGroup
 from .forms import AttendanceSheetForm, MarkAttendanceForm, AttendanceFilterForm
-
+from events.models import Event
+from sermons.models import Sermon
 
 ### Create the attendance sheet ###
 
 
 @login_required
 def attendance_create(request):
+    profile = request.user.profile
+    if profile.role == "member":
+        return redirect("dashboard:index")  # or 403
+
     if request.method == "POST":
         form = AttendanceSheetForm(request.POST)
         if form.is_valid():
             sheet = form.save(commit=False)
             sheet.recorded_by = request.user
+
+            # force group leader to their group
+            if profile.role == "leader":
+                sheet.group = profile.group
+
             sheet.save()
             return redirect("attendance:attendance_mark", sheet_id=sheet.id)
 
     else:
         form = AttendanceSheetForm()
+
+        # Limit list for leaders
+        if profile.role == "leader":
+            form.fields["group"].queryset = MinistryGroup.objects.filter(
+                id=profile.group.id
+            )
+            form.fields["event"].queryset = Event.objects.filter(group=profile.group)
+            form.fields["sermon"].queryset = Sermon.objects.filter(group=profile.group)
 
     return render(request, "attendance/create.html", {"form": form})
 
@@ -33,10 +51,25 @@ def attendance_create(request):
 
 @login_required
 def attendance_list(request):
-    sheets = AttendanceSheet.objects.all().order_by("-date")
+    profile = request.user.profile
+    if profile.is_admin_or_pastor():
+        sheets = AttendanceSheet.objects.all()
+    else:
+        sheets = AttendanceSheet.objects.filter(group=profile.group)
 
-    # filtering
+    sheets = sheets.order_by("-date")
+
+    # filtering but limit options for leaders
+
     form = AttendanceFilterForm(request.GET or None)
+
+    if profile.role == "leader":
+        form.fields["group"].queryset = MinistryGroup.objects.filter(
+            id=profile.group.id
+        )
+        form.fields["event"].queryset = Event.objects.filter(group=profile.group)
+        form.fields["sermon"].queryset = Sermon.objects.filter(group=profile.group)
+
     if form.is_valid():
         if form.cleaned_data["date_from"]:
             sheets = sheets.filter(date__gte=form.cleaned_data["date_from"])
@@ -47,6 +80,7 @@ def attendance_list(request):
         if form.cleaned_data["type"]:
             sheets = sheets.filter(type=form.cleaned_data["type"])
 
+        # (leader filter restricted above)
         if form.cleaned_data["group"]:
             sheets = sheets.filter(group=form.cleaned_data["group"])
 
@@ -68,7 +102,18 @@ def attendance_list(request):
 def attendance_mark(request, sheet_id):
     sheet = get_object_or_404(AttendanceSheet, id=sheet_id)
 
-    users = User.objects.all().order_by("username")
+    profile = request.user.profile
+
+    # Leader only mark attendance for their group
+    if profile.role == "leader" and sheet.group != profile.group:
+        messages.error(request, "Unauthorized access to this attendance sheet.")
+        return redirect("attendance:attendance_list")
+
+    # Limit sers to group members for leader
+    if profile.is_admin_or_pastor():
+        users = User.objects.all().order_by("username")
+    else:
+        users = User.objects.filter(profile__group=profile.group).order_by("username")
 
     # get already marked attendance
     initial_present_ids = AttendanceRecord.objects.filter(
@@ -109,6 +154,11 @@ def attendance_mark(request, sheet_id):
 @login_required
 def attendance_edit(request, id):
     sheet = get_object_or_404(AttendanceSheet, id=id)
+    profile = request.user.profile
+
+    if profile.role == "leader" and sheet.group != profile.group:
+        messages.error(request, "Unauthorized access to this attendance sheet.")
+        return redirect("attendance:attendance_list")
 
     form = AttendanceSheetForm(request.POST or None, instance=sheet)
 

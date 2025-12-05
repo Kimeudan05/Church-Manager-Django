@@ -17,7 +17,7 @@
   </thead>
 
   <tbody>
-    {% for sermon in sermons%}
+    {% for sermon in sermons %}
     <tr>
       <td>
         <a href="{% url 'sermon:detail' sermon.pk %}">{{sermon.title}}</a>

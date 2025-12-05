@@ -28,7 +28,13 @@ class SermonForm(forms.ModelForm):
                     "class": "select select-bordered w-full",
                     "placeholder": "select preacher",
                 }
-            ),
+            ),  # This is for an existing user
+            # "preacher": forms.TextInput(
+            #     attrs={
+            #         "class": "input input-bordered w-full",
+            #         "placeholder": "enter preacher name",
+            #     }
+            # ),
             "date": forms.DateInput(
                 attrs={
                     "class": "input input-bordered w-full",
